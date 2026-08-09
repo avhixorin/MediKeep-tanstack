@@ -1,3 +1,4 @@
+import Iridescence from "#/components/Iridescence";
 import { useNavigate } from "@tanstack/react-router";
 import { ChevronRight, FileText, HeartIcon, Send } from "lucide-react";
 import { useState, useRef } from "react";
@@ -13,16 +14,24 @@ const Hero = () => {
     e.preventDefault();
     if (asked) return navigate({ to: "/auth/register" });
     if (!query.trim()) return;
-    
+
     // Trigger your transition or logic here
     setAsked(true);
   };
 
   return (
-    <section className="relative flex flex-col items-center justify-center min-h-screen pt-16 px-6 md:px-12 lg:px-16 overflow-hidden bg-background font-sans">
+    <section className="relative flex flex-col items-center justify-center min-h-screen pt-16 px-6 md:px-12 lg:px-16 overflow-hidden bg-transparent font-sans">
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <Iridescence
+          speed={1}
+          amplitude={0.1}
+          mouseReact
+        />
+      </div>
+
       <div className="relative z-10 flex flex-col items-center text-center w-full max-w-4xl">
-        <div 
-          className="group flex items-center justify-center gap-3 rounded-full border border-border bg-background px-4 py-2 shadow-sm mb-10 transition-all hover:shadow-md cursor-pointer" 
+        <div
+          className="group flex items-center justify-center gap-3 rounded-full border border-border bg-background px-4 py-2 shadow-sm mb-10 transition-all hover:shadow-md cursor-pointer"
           onClick={() => navigate({ to: "/auth/register" })}
         >
           <HeartIcon className="size-4 text-rose-500" fill="red" />
@@ -48,7 +57,7 @@ const Hero = () => {
         <p className="mt-2 max-w-2xl text-base md:text-lg text-foreground/60 font-normal leading-relaxed mb-12">
           MediKeep integrates advanced AI insights into modern healthcare, delivering personalized, data-driven care and seamless document analysis in real time.
         </p>
-        
+
         <div className="relative w-full max-w-2xl">
           <form
             onSubmit={handleQuery}

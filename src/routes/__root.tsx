@@ -11,6 +11,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 
 import appCss from "@/styles/styles.css?url";
 import AuthInitializer from "@/components/auth/AuthInitializer";
+import { ThemeProvider } from "next-themes";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -41,9 +42,15 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <AuthInitializer>
-      <Outlet />
-    </AuthInitializer>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+      enableSystem
+    >
+      <AuthInitializer>
+        <Outlet />
+      </AuthInitializer>
+    </ThemeProvider>
   );
 }
 

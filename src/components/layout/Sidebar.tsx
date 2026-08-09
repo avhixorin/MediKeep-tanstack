@@ -105,14 +105,14 @@ export function Sidebar() {
             'h-10 w-10',
             isSidebarCollapsed && 'h-8 w-8'
           )}>
-            <AvatarImage src={user?.profilePicture} alt={user?.fullName} />
+            <AvatarImage src={user?.profilePicture} alt={user?.firstName} />
             <AvatarFallback className="bg-primary-100 text-primary-600">
-              {user?.fullName[0] || 'U'}
+              {user?.firstName[0] || 'U'}
             </AvatarFallback>
           </Avatar>
           {!isSidebarCollapsed && (
             <div className="flex-1 overflow-hidden">
-              <p className="truncate font-medium">{user?.fullName}</p>
+              <p className="truncate font-medium">{user?.firstName}</p>
               <p className="truncate text-xs text-muted-foreground capitalize">{user?.role}</p>
             </div>
           )}
@@ -232,13 +232,13 @@ export function MobileSidebar() {
         <div className="border-b p-4">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={user?.profilePicture} alt={user?.fullName} />
+              <AvatarImage src={user?.profilePicture} alt={user?.firstName} />
               <AvatarFallback className="bg-primary-100 text-primary-600">
-                {user?.fullName[0] || 'U'}
+                {user?.firstName[0] || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 overflow-hidden">
-              <p className="truncate font-medium">{user?.fullName}</p>
+              <p className="truncate font-medium">{user?.firstName}</p>
               <p className="truncate text-xs text-muted-foreground capitalize">{user?.role}</p>
             </div>
           </div>

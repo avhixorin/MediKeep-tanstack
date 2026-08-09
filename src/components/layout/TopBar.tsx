@@ -3,6 +3,7 @@ import { Search, Bell } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore, useUIStore } from '@/stores';
 import { MobileSidebar } from './Sidebar';
+import ThemeToggle from '../ui/theme-toggle';
 
 export function TopBar() {
   const { user } = useAuthStore();
@@ -45,21 +46,18 @@ export function TopBar() {
           )}
         </button>
 
+        <ThemeToggle />
         {/* User Menu */}
         <Link
           to="/dashboard/profile"
           className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent"
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.profilePicture} alt={user?.fullName} />
+            <AvatarImage src={user?.profilePicture} alt={user?.firstName} />
             <AvatarFallback className="bg-primary-100 text-primary-600 text-sm">
-              {user?.fullName[0] || 'U'}
+              {user?.firstName[0] || 'U'}
             </AvatarFallback>
           </Avatar>
-          <div className="hidden text-left lg:block">
-            <p className="text-sm font-medium leading-none">{user?.fullName}</p>
-            <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
-          </div>
         </Link>
       </div>
     </header>

@@ -17,7 +17,7 @@ export function DashboardShell({ children, className }: DashboardShellProps) {
       <div
         className={cn(
           'transition-all duration-300',
-          isSidebarCollapsed ? 'lg:ml-16' : 'lg:ml-[280px]'
+          isSidebarCollapsed ? 'lg:ml-16' : 'lg:ml-70'
         )}
       >
         <TopBar />

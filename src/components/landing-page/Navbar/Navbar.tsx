@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { navlinks } from "@/constants/landingPageConsts";
-import { Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "@tanstack/react-router";
+import { useAuthStore } from "#/stores/authStore";
 
 const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -19,13 +20,8 @@ const NavBar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const user = {
-    username: "johndoe",
-    firstName: "John",
-    lastName: "Doe",
-    profilePicture: "https://i.pravatar.cc/150?img=3",
-  };
-
+  const user = useAuthStore((state) => state.user);
+  console.log("The user is", user)
   return (
     <header
       className={`fixed ${isMenuOpen ? "max-md:bg-background/95" : ""
@@ -90,7 +86,7 @@ const NavBar = () => {
             </motion.nav>
 
             <div className="flex items-center gap-4 z-2">
-              {/* {user ? ( */}
+              {user ? (
               <button
                 className="cursor-pointer"
                 onClick={() => navigate({ to: "/dashboard" })}
@@ -106,16 +102,16 @@ const NavBar = () => {
                   </AvatarFallback>
                 </Avatar>
               </button>
-              {/* ) : (
+              ) : (
                 <Button
                   variant={"ghost"}
                   className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 hover:shadow-lg transition-all duration-200 hover:text-white"
-                  onClick={() => navigate("/register")}
+                  onClick={() => navigate({ to: "/auth/register" })}
                 >
                   Get Started{" "}
                   <ArrowRight className="h-4 w-4 hover:translate-x-1 transition-transform duration-200" />
                 </Button>
-              )} */}
+              )}
             </div>
           </>
         )}
@@ -163,7 +159,7 @@ const NavBar = () => {
                 </a>
               ))}
               <div className="border-t border-border/40 mt-4 pt-4 flex items-center justify-between">
-                {/* {user ? ( */}
+                {user ? (
                 <Button
                   variant="ghost"
                   className="flex items-center gap-2 w-full justify-start"
@@ -186,18 +182,18 @@ const NavBar = () => {
                     {user.firstName || "Profile"}
                   </span>
                 </Button>
-                {/* ) : (
+                ) : (
                   <Button
                     variant="outline"
                     className="w-full rounded-full"
                     onClick={() => {
-                      navigate("/login");
+                      navigate({ to: "/auth/login" });
                       setIsMenuOpen(false);
                     }}
                   >
                     Log in
                   </Button>
-                )} */}
+                )}
               </div>
             </nav>
           </motion.div>

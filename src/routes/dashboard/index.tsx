@@ -53,7 +53,7 @@ function DashboardHome() {
         >
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Welcome back, {user?.fullName.split(' ')[0]}! 👋
+              Welcome back, {user?.firstName.split(' ')[0]}! 👋
             </h1>
             <p className="text-slate-600 dark:text-slate-400 mt-1">
               Here's what's happening with your health today.

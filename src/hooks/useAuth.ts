@@ -10,7 +10,7 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: SignInData) => {
-      const response = await apiClient.post<ApiResponse<{ authUser: User; accessToken: string; refreshToken: string }>>(
+      const response = await apiClient.post<ApiResponse<User>>(
         '/users/login',
         data
       );
@@ -18,10 +18,16 @@ export function useAuth() {
     },
     onSuccess: (data) => {
       if (data.success && data.data) {
-        const { authUser } = data.data;
-        storeLogin(authUser);
+        console.log("Data is", data)
+        storeLogin(data.data);
         toast.success('Login successful');
-        queryClient.setQueryData(['user'], authUser);
+        console.log("Logged in user:", data.data);
+        console.log("Zustand user:", useAuthStore.getState().user);
+        console.log(
+          "Zustand authenticated:",
+          useAuthStore.getState().isAuthenticated
+        );
+        queryClient.setQueryData(['user'], data.data);
       } else {
         toast.error(data.message || 'Login failed');
         return Promise.reject(new Error(data.message || 'Login failed'));
