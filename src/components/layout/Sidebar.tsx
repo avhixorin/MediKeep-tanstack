@@ -1,10 +1,10 @@
 import { Link, useLocation } from '@tanstack/react-router';
-import { 
-  Home, 
-  MessageSquare, 
-  Calendar, 
-  FileText, 
-  Users, 
+import {
+  Home,
+  MessageSquare,
+  Calendar,
+  FileText,
+  Users,
   Activity,
   Settings,
   User,
@@ -14,14 +14,15 @@ import {
   Stethoscope,
   Shield,
   Database,
-  ClipboardList
+  ClipboardList,
+  ChevronRight
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore, useUIStore } from '@/stores';
 import { useAuth } from '@/hooks';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
-import type { UserRole } from '@/types';
+import { UserRole } from '@/types';
 import { useState } from 'react';
 
 interface NavItem {
@@ -32,23 +33,23 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', path: '/dashboard', icon: Home, roles: ['patient', 'doctor', 'superAdmin'] },
-  { label: 'Chat', path: '/dashboard/chat', icon: MessageSquare, roles: ['patient', 'doctor'] },
-  { label: 'Appointments', path: '/dashboard/appointments', icon: Calendar, roles: ['patient', 'doctor', 'superAdmin'] },
-  { label: 'Medical Records', path: '/dashboard/records', icon: FileText, roles: ['patient', 'doctor'] },
-  { label: 'Health Vitals', path: '/dashboard/vitals', icon: Activity, roles: ['patient'] },
-  { label: 'Doctors', path: '/dashboard/doctors', icon: Stethoscope, roles: ['patient'] },
-  { label: 'Patients', path: '/dashboard/patients', icon: Users, roles: ['doctor'] },
-  { label: 'Profile', path: '/dashboard/profile', icon: User, roles: ['patient', 'doctor', 'superAdmin'] },
-  { label: 'Settings', path: '/dashboard/settings', icon: Settings, roles: ['patient', 'doctor', 'superAdmin'] },
+  { label: 'Dashboard', path: '/dashboard', icon: Home, roles: [UserRole.PATIENT, UserRole.DOCTOR, UserRole.ADMIN] },
+  { label: 'Chat', path: '/dashboard/chat', icon: MessageSquare, roles: [UserRole.PATIENT, UserRole.DOCTOR] },
+  { label: 'Appointments', path: '/dashboard/appointments', icon: Calendar, roles: [UserRole.PATIENT, UserRole.DOCTOR, UserRole.ADMIN] },
+  { label: 'Medical Records', path: '/dashboard/records', icon: FileText, roles: [UserRole.PATIENT, UserRole.DOCTOR] },
+  { label: 'Health Vitals', path: '/dashboard/vitals', icon: Activity, roles: [UserRole.PATIENT] },
+  { label: 'Doctors', path: '/dashboard/doctors', icon: Stethoscope, roles: [UserRole.PATIENT] },
+  { label: 'Patients', path: '/dashboard/patients', icon: Users, roles: [UserRole.DOCTOR] },
+  { label: 'Profile', path: '/dashboard/profile', icon: User, roles: [UserRole.PATIENT, UserRole.DOCTOR, UserRole.ADMIN] },
+  { label: 'Settings', path: '/dashboard/settings', icon: Settings, roles: [UserRole.PATIENT, UserRole.DOCTOR, UserRole.ADMIN] },
 ];
 
 const adminNavItems: NavItem[] = [
-  { label: 'Admin Dashboard', path: '/admin', icon: Shield, roles: ['superAdmin'] },
-  { label: 'Users', path: '/admin/users', icon: Users, roles: ['superAdmin'] },
-  { label: 'Patients', path: '/admin/patients', icon: Database, roles: ['superAdmin'] },
-  { label: 'Doctors', path: '/admin/doctors', icon: Stethoscope, roles: ['superAdmin'] },
-  { label: 'All Appointments', path: '/admin/appointments', icon: ClipboardList, roles: ['superAdmin'] },
+  { label: 'Admin Dashboard', path: '/admin', icon: Shield, roles: [UserRole.ADMIN] },
+  { label: 'Users', path: '/admin/users', icon: Users, roles: [UserRole.ADMIN] },
+  { label: 'Patients', path: '/admin/patients', icon: Database, roles: [UserRole.ADMIN] },
+  { label: 'Doctors', path: '/admin/doctors', icon: Stethoscope, roles: [UserRole.ADMIN] },
+  { label: 'All Appointments', path: '/admin/appointments', icon: ClipboardList, roles: [UserRole.ADMIN] },
 ];
 
 export function Sidebar() {
@@ -56,11 +57,14 @@ export function Sidebar() {
   const { user } = useAuthStore();
   const { logout } = useAuth();
   const location = useLocation();
-  const role = user?.role || 'patient';
+  const role = user?.role || UserRole.PATIENT;
 
   const filteredNavItems = navItems.filter((item) => item.roles.includes(role));
   const filteredAdminItems = adminNavItems.filter((item) => item.roles.includes(role));
-
+  console.log("Sidebar role:", role);
+  console.log("User role:", user?.role);
+  console.log("UserRole:", UserRole);
+  console.log("Filtered nav:", filteredNavItems);
   return (
     <aside
       className={cn(
@@ -68,7 +72,6 @@ export function Sidebar() {
         isSidebarCollapsed ? 'w-16' : 'w-70'
       )}
     >
-      {/* Logo */}
       <div className="flex h-16 items-center justify-between border-b px-4">
         {!isSidebarCollapsed && (
           <Link to="/" className="flex items-center gap-2">
@@ -82,14 +85,6 @@ export function Sidebar() {
           <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600">
             <Stethoscope className="h-5 w-5 text-white" />
           </div>
-        )}
-        {!isSidebarCollapsed && (
-          <button
-            onClick={toggleSidebar}
-            className="rounded-md p-1 hover:bg-accent"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
         )}
       </div>
 
@@ -123,17 +118,17 @@ export function Sidebar() {
         <div className="space-y-1 px-2">
           {filteredNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path || 
-                           (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
-            
+            const isActive = location.pathname === item.path ||
+              (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
+
             return (
               <Link
                 key={item.path}
                 to={item.path}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2 transition-colors',
-                  isActive 
-                    ? 'bg-primary-50 text-primary-600' 
+                  isActive
+                    ? 'bg-primary-50 text-primary-600'
                     : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
                   isSidebarCollapsed && 'justify-center px-2'
                 )}
@@ -145,7 +140,7 @@ export function Sidebar() {
           })}
         </div>
 
-        {role === 'superAdmin' && filteredAdminItems.length > 0 && (
+        {role === UserRole.ADMIN && filteredAdminItems.length > 0 && (
           <>
             <div className={cn(
               'my-4 border-t',
@@ -161,17 +156,17 @@ export function Sidebar() {
             <div className="space-y-1 px-2">
               {filteredAdminItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname === item.path || 
-                               (item.path !== '/admin' && location.pathname.startsWith(item.path));
-                
+                const isActive = location.pathname === item.path ||
+                  (item.path !== '/admin' && location.pathname.startsWith(item.path));
+
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
                     className={cn(
                       'flex items-center gap-3 rounded-lg px-3 py-2 transition-colors',
-                      isActive 
-                        ? 'bg-primary-50 text-primary-600' 
+                      isActive
+                        ? 'bg-primary-50 text-primary-600'
                         : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
                       isSidebarCollapsed && 'justify-center px-2'
                     )}
@@ -207,7 +202,7 @@ export function MobileSidebar() {
   const { user } = useAuthStore();
   const { logout } = useAuth();
   const location = useLocation();
-  const role = user?.role || 'patient';
+  const role = user?.role || UserRole.PATIENT;
   const [open, setOpen] = useState(false);
 
   const filteredNavItems = navItems.filter((item) => item.roles.includes(role));
@@ -248,9 +243,9 @@ export function MobileSidebar() {
           <div className="space-y-1 px-2">
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path || 
-                             (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
-              
+              const isActive = location.pathname === item.path ||
+                (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
+
               return (
                 <Link
                   key={item.path}
@@ -258,8 +253,8 @@ export function MobileSidebar() {
                   onClick={() => setOpen(false)}
                   className={cn(
                     'flex items-center gap-3 rounded-lg px-3 py-2 transition-colors',
-                    isActive 
-                      ? 'bg-primary-50 text-primary-600' 
+                    isActive
+                      ? 'bg-primary-50 text-primary-600'
                       : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
                   )}
                 >

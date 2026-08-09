@@ -1,6 +1,7 @@
 export enum UserRole {
-  PATIENT = 'patient',
-  DOCTOR = 'doctor'
+  PATIENT = 'PATIENT',
+  DOCTOR = 'DOCTOR',
+  ADMIN = 'ADMIN',
 }
 
 export type AppointmentStatus =

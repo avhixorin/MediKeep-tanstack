@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Search, Bell } from 'lucide-react';
+import { Search, Bell, ChevronLeft, ChevronRight, LucideBedDouble, ArrowRightFromLine, ArrowBigRight } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore, useUIStore } from '@/stores';
 import { MobileSidebar } from './Sidebar';
@@ -7,15 +7,24 @@ import ThemeToggle from '../ui/theme-toggle';
 
 export function TopBar() {
   const { user } = useAuthStore();
-  const { unreadNotificationsCount } = useUIStore();
-
+  const { unreadNotificationsCount, isSidebarCollapsed, toggleSidebar } = useUIStore();
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-background px-4 lg:px-8">
       <div className="flex items-center">
         <MobileSidebar />
-        
         <nav className="hidden text-sm text-muted-foreground lg:block">
-          <ol className="flex items-center gap-2">
+          <ol className="flex items-center justify-center gap-2">
+            <button
+              onClick={toggleSidebar}
+              className="rounded-md cursor-pointer mb-1 mr-2"
+              aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {isSidebarCollapsed ? (
+                <span className='text-2xl'>»</span>
+              ) : (
+                <span className='text-2xl'>«</span>
+              )}
+            </button>
             <li>
               <Link to="/dashboard" className="hover:text-foreground">
                 Dashboard
