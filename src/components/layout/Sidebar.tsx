@@ -8,14 +8,12 @@ import {
   Activity,
   Settings,
   User,
-  ChevronLeft,
   Menu,
   LogOut,
   Stethoscope,
   Shield,
   Database,
-  ClipboardList,
-  ChevronRight
+  ClipboardList
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore, useUIStore } from '@/stores';
@@ -53,7 +51,7 @@ const adminNavItems: NavItem[] = [
 ];
 
 export function Sidebar() {
-  const { isSidebarCollapsed, toggleSidebar } = useUIStore();
+  const { isSidebarCollapsed } = useUIStore();
   const { user } = useAuthStore();
   const { logout } = useAuth();
   const location = useLocation();

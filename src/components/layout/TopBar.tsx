@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { Search, Bell, ChevronLeft, ChevronRight, LucideBedDouble, ArrowRightFromLine, ArrowBigRight } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore, useUIStore } from '@/stores';
 import { MobileSidebar } from './Sidebar';
