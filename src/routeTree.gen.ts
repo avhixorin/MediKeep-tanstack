@@ -9,62 +9,49 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as DashboardRecordsRouteImport } from './routes/dashboard/records'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard/profile'
-import { Route as DashboardChatRouteImport } from './routes/dashboard/chat'
-import { Route as DashboardAppointmentsRouteImport } from './routes/dashboard/appointments'
-import { Route as Dashboard_layoutRouteImport } from './routes/dashboard/__layout'
 import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminPatientsRouteImport } from './routes/admin/patients'
 import { Route as AdminDoctorsRouteImport } from './routes/admin/doctors'
 import { Route as AdminAppointmentsRouteImport } from './routes/admin/appointments'
 import { Route as Admin_layoutRouteImport } from './routes/admin/__layout'
+import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/settings/index'
+import { Route as DashboardRecordsIndexRouteImport } from './routes/dashboard/records/index'
+import { Route as DashboardPatientsIndexRouteImport } from './routes/dashboard/patients/index'
+import { Route as DashboardChatIndexRouteImport } from './routes/dashboard/chat/index'
+import { Route as DashboardAppoinmentsIndexRouteImport } from './routes/dashboard/appoinments/index'
 import { Route as AuthRegisterIndexRouteImport } from './routes/auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRecordsRoute = DashboardRecordsRouteImport.update({
-  id: '/dashboard/records',
-  path: '/dashboard/records',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DashboardProfileRoute = DashboardProfileRouteImport.update({
-  id: '/dashboard/profile',
-  path: '/dashboard/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardChatRoute = DashboardChatRouteImport.update({
-  id: '/dashboard/chat',
-  path: '/dashboard/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardAppointmentsRoute = DashboardAppointmentsRouteImport.update({
-  id: '/dashboard/appointments',
-  path: '/dashboard/appointments',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Dashboard_layoutRoute = Dashboard_layoutRouteImport.update({
-  id: '/dashboard/__layout',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   id: '/auth/forgot-password',
@@ -96,6 +83,32 @@ const Admin_layoutRoute = Admin_layoutRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardRecordsIndexRoute = DashboardRecordsIndexRouteImport.update({
+  id: '/records/',
+  path: '/records/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardPatientsIndexRoute = DashboardPatientsIndexRouteImport.update({
+  id: '/patients/',
+  path: '/patients/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardChatIndexRoute = DashboardChatIndexRouteImport.update({
+  id: '/chat/',
+  path: '/chat/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardAppoinmentsIndexRoute =
+  DashboardAppoinmentsIndexRouteImport.update({
+    id: '/appoinments/',
+    path: '/appoinments/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
 const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
   id: '/auth/register/',
   path: '/auth/register/',
@@ -109,21 +122,23 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/admin': typeof Admin_layoutRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/doctors': typeof AdminDoctorsRoute
   '/admin/patients': typeof AdminPatientsRoute
   '/admin/users': typeof AdminUsersRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
-  '/dashboard': typeof Dashboard_layoutRoute
-  '/dashboard/appointments': typeof DashboardAppointmentsRoute
-  '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/profile': typeof DashboardProfileRoute
-  '/dashboard/records': typeof DashboardRecordsRoute
   '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/register/': typeof AuthRegisterIndexRoute
+  '/dashboard/appoinments/': typeof DashboardAppoinmentsIndexRoute
+  '/dashboard/chat/': typeof DashboardChatIndexRoute
+  '/dashboard/patients/': typeof DashboardPatientsIndexRoute
+  '/dashboard/records/': typeof DashboardRecordsIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -133,52 +148,58 @@ export interface FileRoutesByTo {
   '/admin/patients': typeof AdminPatientsRoute
   '/admin/users': typeof AdminUsersRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
-  '/dashboard': typeof DashboardIndexRoute
-  '/dashboard/appointments': typeof DashboardAppointmentsRoute
-  '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/profile': typeof DashboardProfileRoute
-  '/dashboard/records': typeof DashboardRecordsRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
+  '/dashboard/appoinments': typeof DashboardAppoinmentsIndexRoute
+  '/dashboard/chat': typeof DashboardChatIndexRoute
+  '/dashboard/patients': typeof DashboardPatientsIndexRoute
+  '/dashboard/records': typeof DashboardRecordsIndexRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/admin/__layout': typeof Admin_layoutRoute
   '/admin/appointments': typeof AdminAppointmentsRoute
   '/admin/doctors': typeof AdminDoctorsRoute
   '/admin/patients': typeof AdminPatientsRoute
   '/admin/users': typeof AdminUsersRoute
   '/auth/forgot-password': typeof AuthForgotPasswordRoute
-  '/dashboard/__layout': typeof Dashboard_layoutRoute
-  '/dashboard/appointments': typeof DashboardAppointmentsRoute
-  '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/profile': typeof DashboardProfileRoute
-  '/dashboard/records': typeof DashboardRecordsRoute
   '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/register/': typeof AuthRegisterIndexRoute
+  '/dashboard/appoinments/': typeof DashboardAppoinmentsIndexRoute
+  '/dashboard/chat/': typeof DashboardChatIndexRoute
+  '/dashboard/patients/': typeof DashboardPatientsIndexRoute
+  '/dashboard/records/': typeof DashboardRecordsIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/admin'
     | '/admin/appointments'
     | '/admin/doctors'
     | '/admin/patients'
     | '/admin/users'
     | '/auth/forgot-password'
-    | '/dashboard'
-    | '/dashboard/appointments'
-    | '/dashboard/chat'
     | '/dashboard/profile'
-    | '/dashboard/records'
     | '/admin/'
     | '/dashboard/'
     | '/auth/login/'
     | '/auth/register/'
+    | '/dashboard/appoinments/'
+    | '/dashboard/chat/'
+    | '/dashboard/patients/'
+    | '/dashboard/records/'
+    | '/dashboard/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -188,54 +209,60 @@ export interface FileRouteTypes {
     | '/admin/patients'
     | '/admin/users'
     | '/auth/forgot-password'
-    | '/dashboard'
-    | '/dashboard/appointments'
-    | '/dashboard/chat'
     | '/dashboard/profile'
-    | '/dashboard/records'
+    | '/dashboard'
     | '/auth/login'
     | '/auth/register'
+    | '/dashboard/appoinments'
+    | '/dashboard/chat'
+    | '/dashboard/patients'
+    | '/dashboard/records'
+    | '/dashboard/settings'
   id:
     | '__root__'
     | '/'
+    | '/dashboard'
     | '/admin/__layout'
     | '/admin/appointments'
     | '/admin/doctors'
     | '/admin/patients'
     | '/admin/users'
     | '/auth/forgot-password'
-    | '/dashboard/__layout'
-    | '/dashboard/appointments'
-    | '/dashboard/chat'
     | '/dashboard/profile'
-    | '/dashboard/records'
     | '/admin/'
     | '/dashboard/'
     | '/auth/login/'
     | '/auth/register/'
+    | '/dashboard/appoinments/'
+    | '/dashboard/chat/'
+    | '/dashboard/patients/'
+    | '/dashboard/records/'
+    | '/dashboard/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   Admin_layoutRoute: typeof Admin_layoutRoute
   AdminAppointmentsRoute: typeof AdminAppointmentsRoute
   AdminDoctorsRoute: typeof AdminDoctorsRoute
   AdminPatientsRoute: typeof AdminPatientsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
-  Dashboard_layoutRoute: typeof Dashboard_layoutRoute
-  DashboardAppointmentsRoute: typeof DashboardAppointmentsRoute
-  DashboardChatRoute: typeof DashboardChatRoute
-  DashboardProfileRoute: typeof DashboardProfileRoute
-  DashboardRecordsRoute: typeof DashboardRecordsRoute
   AdminIndexRoute: typeof AdminIndexRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
   AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -245,10 +272,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/': {
       id: '/dashboard/'
-      path: '/dashboard'
+      path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -257,40 +284,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/records': {
-      id: '/dashboard/records'
-      path: '/dashboard/records'
-      fullPath: '/dashboard/records'
-      preLoaderRoute: typeof DashboardRecordsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dashboard/profile': {
       id: '/dashboard/profile'
-      path: '/dashboard/profile'
+      path: '/profile'
       fullPath: '/dashboard/profile'
       preLoaderRoute: typeof DashboardProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/chat': {
-      id: '/dashboard/chat'
-      path: '/dashboard/chat'
-      fullPath: '/dashboard/chat'
-      preLoaderRoute: typeof DashboardChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/appointments': {
-      id: '/dashboard/appointments'
-      path: '/dashboard/appointments'
-      fullPath: '/dashboard/appointments'
-      preLoaderRoute: typeof DashboardAppointmentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard/__layout': {
-      id: '/dashboard/__layout'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof Dashboard_layoutRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRouteRoute
     }
     '/auth/forgot-password': {
       id: '/auth/forgot-password'
@@ -334,6 +333,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Admin_layoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/settings/': {
+      id: '/dashboard/settings/'
+      path: '/settings'
+      fullPath: '/dashboard/settings/'
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/records/': {
+      id: '/dashboard/records/'
+      path: '/records'
+      fullPath: '/dashboard/records/'
+      preLoaderRoute: typeof DashboardRecordsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/patients/': {
+      id: '/dashboard/patients/'
+      path: '/patients'
+      fullPath: '/dashboard/patients/'
+      preLoaderRoute: typeof DashboardPatientsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/chat/': {
+      id: '/dashboard/chat/'
+      path: '/chat'
+      fullPath: '/dashboard/chat/'
+      preLoaderRoute: typeof DashboardChatIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/appoinments/': {
+      id: '/dashboard/appoinments/'
+      path: '/appoinments'
+      fullPath: '/dashboard/appoinments/'
+      preLoaderRoute: typeof DashboardAppoinmentsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/auth/register/': {
       id: '/auth/register/'
       path: '/auth/register'
@@ -351,21 +385,40 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardRouteRouteChildren {
+  DashboardProfileRoute: typeof DashboardProfileRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardAppoinmentsIndexRoute: typeof DashboardAppoinmentsIndexRoute
+  DashboardChatIndexRoute: typeof DashboardChatIndexRoute
+  DashboardPatientsIndexRoute: typeof DashboardPatientsIndexRoute
+  DashboardRecordsIndexRoute: typeof DashboardRecordsIndexRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+}
+
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardProfileRoute: DashboardProfileRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardAppoinmentsIndexRoute: DashboardAppoinmentsIndexRoute,
+  DashboardChatIndexRoute: DashboardChatIndexRoute,
+  DashboardPatientsIndexRoute: DashboardPatientsIndexRoute,
+  DashboardRecordsIndexRoute: DashboardRecordsIndexRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   Admin_layoutRoute: Admin_layoutRoute,
   AdminAppointmentsRoute: AdminAppointmentsRoute,
   AdminDoctorsRoute: AdminDoctorsRoute,
   AdminPatientsRoute: AdminPatientsRoute,
   AdminUsersRoute: AdminUsersRoute,
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
-  Dashboard_layoutRoute: Dashboard_layoutRoute,
-  DashboardAppointmentsRoute: DashboardAppointmentsRoute,
-  DashboardChatRoute: DashboardChatRoute,
-  DashboardProfileRoute: DashboardProfileRoute,
-  DashboardRecordsRoute: DashboardRecordsRoute,
   AdminIndexRoute: AdminIndexRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthRegisterIndexRoute: AuthRegisterIndexRoute,
 }

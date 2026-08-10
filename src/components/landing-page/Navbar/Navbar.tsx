@@ -21,14 +21,13 @@ const NavBar = () => {
   }, []);
 
   const user = useAuthStore((state) => state.user);
-  console.log("The user is", user)
   return (
     <header
       className={`fixed ${isMenuOpen ? "max-md:bg-background/95" : ""
         } max-md:backdrop-blur-md top-0 w-full z-50 transition-all duration-300 ${scrolled ? "py-3 md:px-16" : "py-4 md:px-12"
         } px-4`}
     >
-      <div className="flex items-center justify-between">
+      <div className="w-full flex items-center justify-between">
         <button
           className="flex items-center cursor-pointer z-3"
           onClick={() => navigate({ to: "/" })}

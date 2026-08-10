@@ -18,10 +18,6 @@ import { useState } from 'react';
 import { useSocketEmitters } from '@/hooks';
 import { motion } from 'framer-motion';
 
-export const Route = createFileRoute('/dashboard/appointments')({
-  component: AppointmentsPage,
-});
-
 const appointments = [
   {
     id: '1',
@@ -265,3 +261,5 @@ function AppointmentsPage() {
     </DashboardShell>
   );
 }
+
+export default AppointmentsPage;

@@ -21,10 +21,6 @@ import { useAuthStore, useChatStore } from '@/stores';
 import { useSocketEmitters } from '@/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export const Route = createFileRoute('/dashboard/chat')({
-  component: ChatPage,
-});
-
 function ChatPage() {
   const { user } = useAuthStore();
   const { conversations, activeConversationId, setActiveConversation } = useChatStore();
@@ -54,7 +50,7 @@ function ChatPage() {
   };
 
   const filteredConversations = conversations.filter(conv =>
-    conv.friend?.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conv.friend?.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     conv.friend?.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -94,9 +90,9 @@ function ChatPage() {
                   >
                     <div className="relative">
                       <Avatar className="h-12 w-12">
-                        <AvatarImage src={conv.friend?.profilePicture} alt={conv.friend?.fullName} />
+                        <AvatarImage src={conv.friend?.profilePicture} alt={conv.friend?.firstName} />
                         <AvatarFallback className="bg-primary-100 text-primary-600">
-                          {conv.friend?.fullName[0] || 'U'}
+                          {conv.friend?.firstName[0] || 'U'}
                         </AvatarFallback>
                       </Avatar>
                       <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
@@ -104,7 +100,7 @@ function ChatPage() {
                     <div className="flex-1 min-w-0 text-left">
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-slate-900 dark:text-white truncate">
-                          {conv.friend?.fullName || 'Unknown'}
+                          {conv.friend?.firstName || 'Unknown'}
                         </h3>
                         {(conv.unreadCount ?? 0) > 0 && (
                           <Badge variant="default" className="ml-2">{conv.unreadCount}</Badge>
@@ -130,12 +126,12 @@ function ChatPage() {
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={activeConversation.friend?.profilePicture} />
                   <AvatarFallback className="bg-primary-100 text-primary-600">
-                    {activeConversation.friend?.fullName[0] || 'U'}
+                    {activeConversation.friend?.firstName[0] || 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <h3 className="font-semibold text-slate-900 dark:text-white">
-                    {activeConversation.friend?.fullName}
+                    {activeConversation.friend?.firstName}
                   </h3>
                   <p className="text-xs text-slate-500">Online</p>
                 </div>
@@ -171,7 +167,7 @@ function ChatPage() {
                         {showAvatar && !isMe && (
                           <Avatar className="h-8 w-8">
                             <AvatarFallback className="bg-primary-100 text-primary-600 text-xs">
-                              {activeConversation.friend?.fullName[0] || 'U'}
+                              {activeConversation.friend?.firstName[0] || 'U'}
                             </AvatarFallback>
                           </Avatar>
                         )}
@@ -241,3 +237,5 @@ function ChatPage() {
     </DashboardShell>
   );
 }
+
+export default ChatPage;

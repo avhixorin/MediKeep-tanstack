@@ -3,11 +3,12 @@ import apiClient from '@/lib/api';
 import { useAuthStore } from '@/stores';
 import type { ApiResponse, SignInData, ForgotPasswordData, ResetPasswordData, User, RegistrationFormData } from '@/types';
 import { toast } from 'sonner';
+import { useNavigate } from '@tanstack/react-router';
 
 export function useAuth() {
   const { login: storeLogin, logout: storeLogout, user, isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate();
   const loginMutation = useMutation({
     mutationFn: async (data: SignInData) => {
       const response = await apiClient.post<ApiResponse<User>>(
@@ -83,6 +84,7 @@ export function useAuth() {
       storeLogout();
       queryClient.clear();
       toast.success('Logged out successfully');
+      navigate({to: "/auth/login", replace: true})
     },
     onError: () => {
       storeLogout();

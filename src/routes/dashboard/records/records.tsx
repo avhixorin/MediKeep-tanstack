@@ -19,10 +19,6 @@ import { useMedicalRecords } from '@/hooks';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-export const Route = createFileRoute('/dashboard/records')({
-  component: MedicalRecordsPage,
-});
-
 const mockRecords = [
   {
     id: '1',
@@ -263,3 +259,5 @@ function MedicalRecordsPage() {
     </DashboardShell>
   );
 }
+
+export default MedicalRecordsPage;

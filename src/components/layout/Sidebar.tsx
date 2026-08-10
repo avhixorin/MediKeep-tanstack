@@ -59,10 +59,7 @@ export function Sidebar() {
 
   const filteredNavItems = navItems.filter((item) => item.roles.includes(role));
   const filteredAdminItems = adminNavItems.filter((item) => item.roles.includes(role));
-  console.log("Sidebar role:", role);
-  console.log("User role:", user?.role);
-  console.log("UserRole:", UserRole);
-  console.log("Filtered nav:", filteredNavItems);
+
   return (
     <aside
       className={cn(
@@ -184,7 +181,7 @@ export function Sidebar() {
         <button
           onClick={() => logout()}
           className={cn(
-            'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground',
+            'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors',
             isSidebarCollapsed && 'justify-center px-2'
           )}
         >

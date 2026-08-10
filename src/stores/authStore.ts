@@ -26,6 +26,7 @@ export const useAuthStore = create<AuthState>()(
         set({
           user,
           isAuthenticated: !!user,
+          isLoading: false,
         }),
 
       login: (user) =>
