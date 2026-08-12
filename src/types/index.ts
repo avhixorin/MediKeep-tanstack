@@ -4,13 +4,15 @@ export enum UserRole {
   ADMIN = 'ADMIN',
 }
 
-export type AppointmentStatus =
-  | 'pending'
-  | 'scheduled'
-  | 'completed'
-  | 'cancelled'
-  | 'rescheduled'
-  | 'declined';
+export enum AppointmentStatus {
+  "IDLE" = "request",
+  "REQUESTED" = "requested" ,
+  "SCHEDULED" = "scheduled" , 
+  "COMPLETED" = "completed" , 
+  "RESCHEDULED" = "rescheduled" , 
+  "CANCELLED" = "cancelled",
+  "DECLINED" = "declined"
+}
 
 export type RegistrationFormData = {
   username: string;
@@ -39,7 +41,7 @@ export interface User {
   bio?: string;
   connections: string[];
   connectionRequests: string[];
-  appointments: string[];
+  appointments: Appointment[];
   notifications: Notification[];
   messages?: ChatMessage[];
   isVerified: boolean;
@@ -109,8 +111,8 @@ export interface MedicalFile {
 
 export interface Appointment {
   _id: string;
-  patient: User | string;
-  doctor: User | string;
+  patient: User;
+  doctor: User;
   date: string;
   time: string;
   status: AppointmentStatus;

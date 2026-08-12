@@ -1,21 +1,25 @@
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const ThemeToggle = () => {
-    const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
 
-    return (
-        <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="rounded-md p-2 cursor-pointer"
-        >
-            {theme === "dark" ?
-                <Moon className="h-5 w-5" />
-                :
-                <Sun className="h-5 w-5" />
-            }
-        </button>
-    );
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const isDark =
+          document.documentElement.classList.contains('dark');
+
+        setTheme(isDark ? 'light' : 'dark');
+      }}
+      className="relative rounded-md p-2 cursor-pointer"
+      aria-label="Toggle theme"
+    >
+      <Sun className="h-5 w-5 dark:hidden" />
+      <Moon className="hidden h-5 w-5 dark:block" />
+    </button>
+  );
 };
 
 export default ThemeToggle;

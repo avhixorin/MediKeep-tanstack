@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Activity, 
-  Users, 
-  Calendar, 
-  FileText, 
-  MessageSquare, 
+import {
+  Activity,
+  Users,
+  Calendar,
+  FileText,
+  MessageSquare,
   Video,
   ArrowUpRight,
   Clock,
@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores';
+import { UserRole } from '#/types';
 
 export const Route = createFileRoute('/dashboard/')({
   component: DashboardHome,
@@ -42,7 +43,7 @@ const itemVariants = {
 
 function DashboardHome() {
   const { user } = useAuthStore();
-
+  console.log("User", user)
   return (
     <DashboardShell>
       <div className="space-y-8">
@@ -59,19 +60,14 @@ function DashboardHome() {
               Here's what's happening with your health today.
             </p>
           </div>
-          <div className="flex gap-3">
+          {user?.role === UserRole.PATIENT && <div className="flex gap-3">
             <Button variant="outline">
               <Calendar className="mr-2 h-4 w-4" />
               Book Appointment
             </Button>
-            <Button>
-              <Video className="mr-2 h-4 w-4" />
-              Start Video Call
-            </Button>
-          </div>
+          </div>}
         </motion.div>
 
-        {/* Stats Cards */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -80,19 +76,11 @@ function DashboardHome() {
         >
           <StatCard
             title="Total Appointments"
-            value="12"
+            value={user?.appointments.length.toString() || '0'}
             change="+2"
             icon={Calendar}
             trend="up"
             color="blue"
-          />
-          <StatCard
-            title="Health Score"
-            value="94"
-            change="+5%"
-            icon={Activity}
-            trend="up"
-            color="green"
           />
           <StatCard
             title="Connected Providers"
@@ -339,9 +327,8 @@ function StatCard({ title, value, change, icon: Icon, trend, color }: StatCardPr
             <div className={`w-12 h-12 rounded-xl ${colorClasses[color]} flex items-center justify-center`}>
               <Icon className="h-6 w-6" />
             </div>
-            <div className={`flex items-center text-sm font-medium ${
-              trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-slate-600'
-            }`}>
+            <div className={`flex items-center text-sm font-medium ${trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-slate-600'
+              }`}>
               {trendIcon} {change}
             </div>
           </div>

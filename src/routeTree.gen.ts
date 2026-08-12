@@ -24,7 +24,7 @@ import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/s
 import { Route as DashboardRecordsIndexRouteImport } from './routes/dashboard/records/index'
 import { Route as DashboardPatientsIndexRouteImport } from './routes/dashboard/patients/index'
 import { Route as DashboardChatIndexRouteImport } from './routes/dashboard/chat/index'
-import { Route as DashboardAppoinmentsIndexRouteImport } from './routes/dashboard/appoinments/index'
+import { Route as DashboardAppointmentsIndexRouteImport } from './routes/dashboard/appointments/index'
 import { Route as AuthRegisterIndexRouteImport } from './routes/auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 
@@ -103,10 +103,10 @@ const DashboardChatIndexRoute = DashboardChatIndexRouteImport.update({
   path: '/chat/',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardAppoinmentsIndexRoute =
-  DashboardAppoinmentsIndexRouteImport.update({
-    id: '/appoinments/',
-    path: '/appoinments/',
+const DashboardAppointmentsIndexRoute =
+  DashboardAppointmentsIndexRouteImport.update({
+    id: '/appointments/',
+    path: '/appointments/',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
 const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
@@ -134,7 +134,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/register/': typeof AuthRegisterIndexRoute
-  '/dashboard/appoinments/': typeof DashboardAppoinmentsIndexRoute
+  '/dashboard/appointments/': typeof DashboardAppointmentsIndexRoute
   '/dashboard/chat/': typeof DashboardChatIndexRoute
   '/dashboard/patients/': typeof DashboardPatientsIndexRoute
   '/dashboard/records/': typeof DashboardRecordsIndexRoute
@@ -152,7 +152,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/register': typeof AuthRegisterIndexRoute
-  '/dashboard/appoinments': typeof DashboardAppoinmentsIndexRoute
+  '/dashboard/appointments': typeof DashboardAppointmentsIndexRoute
   '/dashboard/chat': typeof DashboardChatIndexRoute
   '/dashboard/patients': typeof DashboardPatientsIndexRoute
   '/dashboard/records': typeof DashboardRecordsIndexRoute
@@ -173,7 +173,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/register/': typeof AuthRegisterIndexRoute
-  '/dashboard/appoinments/': typeof DashboardAppoinmentsIndexRoute
+  '/dashboard/appointments/': typeof DashboardAppointmentsIndexRoute
   '/dashboard/chat/': typeof DashboardChatIndexRoute
   '/dashboard/patients/': typeof DashboardPatientsIndexRoute
   '/dashboard/records/': typeof DashboardRecordsIndexRoute
@@ -195,7 +195,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/auth/login/'
     | '/auth/register/'
-    | '/dashboard/appoinments/'
+    | '/dashboard/appointments/'
     | '/dashboard/chat/'
     | '/dashboard/patients/'
     | '/dashboard/records/'
@@ -213,7 +213,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/auth/login'
     | '/auth/register'
-    | '/dashboard/appoinments'
+    | '/dashboard/appointments'
     | '/dashboard/chat'
     | '/dashboard/patients'
     | '/dashboard/records'
@@ -233,7 +233,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/auth/login/'
     | '/auth/register/'
-    | '/dashboard/appoinments/'
+    | '/dashboard/appointments/'
     | '/dashboard/chat/'
     | '/dashboard/patients/'
     | '/dashboard/records/'
@@ -361,11 +361,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardChatIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/dashboard/appoinments/': {
-      id: '/dashboard/appoinments/'
-      path: '/appoinments'
-      fullPath: '/dashboard/appoinments/'
-      preLoaderRoute: typeof DashboardAppoinmentsIndexRouteImport
+    '/dashboard/appointments/': {
+      id: '/dashboard/appointments/'
+      path: '/appointments'
+      fullPath: '/dashboard/appointments/'
+      preLoaderRoute: typeof DashboardAppointmentsIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/auth/register/': {
@@ -388,7 +388,7 @@ declare module '@tanstack/react-router' {
 interface DashboardRouteRouteChildren {
   DashboardProfileRoute: typeof DashboardProfileRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
-  DashboardAppoinmentsIndexRoute: typeof DashboardAppoinmentsIndexRoute
+  DashboardAppointmentsIndexRoute: typeof DashboardAppointmentsIndexRoute
   DashboardChatIndexRoute: typeof DashboardChatIndexRoute
   DashboardPatientsIndexRoute: typeof DashboardPatientsIndexRoute
   DashboardRecordsIndexRoute: typeof DashboardRecordsIndexRoute
@@ -398,7 +398,7 @@ interface DashboardRouteRouteChildren {
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardProfileRoute: DashboardProfileRoute,
   DashboardIndexRoute: DashboardIndexRoute,
-  DashboardAppoinmentsIndexRoute: DashboardAppoinmentsIndexRoute,
+  DashboardAppointmentsIndexRoute: DashboardAppointmentsIndexRoute,
   DashboardChatIndexRoute: DashboardChatIndexRoute,
   DashboardPatientsIndexRoute: DashboardPatientsIndexRoute,
   DashboardRecordsIndexRoute: DashboardRecordsIndexRoute,
