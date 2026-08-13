@@ -2,18 +2,18 @@ import { createFileRoute } from '@tanstack/react-router';
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { ConnectedEntityGrid } from '@/components/records/ConnectedEntityGrid';
 
-export const Route = createFileRoute('/dashboard/patients/')({
-  component: PatientsPage,
+export const Route = createFileRoute('/dashboard/doctors/')({
+  component: DoctorsPage,
 });
 
-function PatientsPage() {
+function DoctorsPage() {
   return (
     <DashboardShell>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Patients</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Doctors</h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Patients you're clinically connected with
+            Doctors you're clinically connected with
           </p>
         </div>
 

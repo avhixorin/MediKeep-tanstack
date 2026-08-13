@@ -1,31 +1,32 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
+import { useQueryClient } from '@tanstack/react-query';
 import { SOCKET_EVENTS } from '@/constants/socketEvents';
-import { useAuthStore, useChatStore, useAppointmentStore } from '@/stores';
+import { useAuthStore, useChatStore } from '@/stores';
+import { APPOINTMENTS_QUERY_KEY } from '@/hooks/useAppointments';
+import { CONNECTIONS_QUERY_KEY } from '@/hooks/useConnections';
 import type { ChatMessage, User, Appointment, ApiResponse } from '@/types';
 import { toast } from 'sonner';
 
+type AppointmentEventPayload = ApiResponse<Appointment> & {
+  appointment?: Appointment;
+};
+
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
-  const { user, accessToken, isAuthenticated } = useAuthStore();
-  const { addMessage, addOnlineUser, removeOnlineUser, addConversation, updateConversation } = useChatStore();
-  const { 
-    addAppointment, 
-    addAppointmentRequest, 
-    updateAppointment, 
-    removeAppointment,
-    removeAppointmentRequest 
-  } = useAppointmentStore();
+  const { isAuthenticated } = useAuthStore();
+  const queryClient = useQueryClient();
+  const { addMessage, addOnlineUser, removeOnlineUser } = useChatStore();
 
   const connect = useCallback(() => {
-    if (socketRef.current?.connected || !accessToken) return;
+    if (socketRef.current?.connected || !isAuthenticated) return;
 
     const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
-    
+
     socketRef.current = io(socketUrl, {
-      auth: {
-        token: accessToken,
-      },
+      // The backend authenticates sockets via the httpOnly accessToken cookie
+      withCredentials: true,
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: 5,
@@ -46,9 +47,9 @@ export function useSocket() {
     });
 
     // Chat events
-    socketRef.current.on(SOCKET_EVENTS.NEW_PRIVATE_MESSAGE, (data: { 
-      message: string; 
-      sender: Partial<User>; 
+    socketRef.current.on(SOCKET_EVENTS.NEW_PRIVATE_MESSAGE, (data: {
+      message: string;
+      sender: Partial<User>;
       messageId: string;
     }) => {
       if (data.sender._id) {
@@ -59,7 +60,7 @@ export function useSocket() {
           timestamp: new Date().toISOString(),
         };
         addMessage(data.sender._id, chatMessage);
-        
+
         // Show notification if not in active conversation
         toast.info(`New message from ${data.sender.username || 'Unknown'}`, {
           description: data.message,
@@ -67,13 +68,17 @@ export function useSocket() {
       }
     });
 
-    // Connection events
+    // Connection events — sockets only deliver live notifications; the actual
+    // send/accept/reject operations go through the REST API.
     socketRef.current.on(SOCKET_EVENTS.NEW_CONNECTION_NOTIFICATION, (data: {
       type: string;
       message: string;
       from: Partial<User>;
     }) => {
       toast.info(data.message);
+      queryClient.invalidateQueries({
+        queryKey: CONNECTIONS_QUERY_KEY,
+      });
     });
 
     socketRef.current.on(SOCKET_EVENTS.ACCEPTED_CONNECTION, (data: {
@@ -81,6 +86,9 @@ export function useSocket() {
       accepter: Partial<User>;
     }) => {
       toast.success(data.message);
+      queryClient.invalidateQueries({
+        queryKey: CONNECTIONS_QUERY_KEY,
+      });
     });
 
     socketRef.current.on(SOCKET_EVENTS.REJECTED_CONNECTION, (data: {
@@ -88,57 +96,62 @@ export function useSocket() {
       rejecterId: string;
     }) => {
       toast.error(data.message);
+      queryClient.invalidateQueries({
+        queryKey: CONNECTIONS_QUERY_KEY,
+      });
     });
 
-    // Appointment events
-    socketRef.current.on(SOCKET_EVENTS.NEW_APPOINTMENT_REQUEST, (response: ApiResponse<Appointment>) => {
-      if (response.data) {
-        addAppointmentRequest(response.data);
-        toast.info(response.message);
+    // Appointment events — sockets are only used for live updates and
+    // notifications. All appointment actions go through the REST API.
+    const handleAppointmentUpdate = (
+      payload: AppointmentEventPayload,
+      toastFn: (message: string) => void = toast.info
+    ) => {
+      if (payload.message) {
+        toastFn(payload.message);
       }
-    });
+      queryClient.invalidateQueries({ queryKey: APPOINTMENTS_QUERY_KEY });
+    };
 
-    socketRef.current.on(SOCKET_EVENTS.ACCEPT_APPOINTMENT, (response: ApiResponse<Appointment>) => {
-      if (response.data) {
-        updateAppointment(response.data._id, { status: 'scheduled' });
-        toast.success(response.message);
-      }
-    });
+    socketRef.current.on(
+      SOCKET_EVENTS.NEW_APPOINTMENT_REQUEST,
+      (payload: AppointmentEventPayload) => handleAppointmentUpdate(payload)
+    );
 
-    socketRef.current.on(SOCKET_EVENTS.RESCHEDULED_APPOINTMENT, (response: ApiResponse<Appointment>) => {
-      if (response.data) {
-        updateAppointment(response.data._id, response.data);
-        toast.info(response.message);
-      }
-    });
+    socketRef.current.on(
+      SOCKET_EVENTS.ACCEPT_APPOINTMENT,
+      (payload: AppointmentEventPayload) =>
+        handleAppointmentUpdate(payload, toast.success)
+    );
 
-    socketRef.current.on(SOCKET_EVENTS.CANCELLED_APPOINTMENT, (response: ApiResponse<Appointment>) => {
-      if (response.data) {
-        removeAppointment(response.data._id);
-        toast.info(response.message);
-      }
-    });
+    socketRef.current.on(
+      SOCKET_EVENTS.RESCHEDULED_APPOINTMENT,
+      (payload: AppointmentEventPayload) => handleAppointmentUpdate(payload)
+    );
 
-    socketRef.current.on(SOCKET_EVENTS.DECLINE_APPOINTMENT_REQUEST, (response: ApiResponse<Appointment>) => {
-      if (response.data) {
-        removeAppointmentRequest(response.data._id);
-        toast.error(response.message);
-      }
-    });
+    socketRef.current.on(
+      SOCKET_EVENTS.CANCELLED_APPOINTMENT,
+      (payload: AppointmentEventPayload) => handleAppointmentUpdate(payload)
+    );
 
-    socketRef.current.on(SOCKET_EVENTS.COMPLETED_APPOINTMENT, (response: ApiResponse<Appointment>) => {
-      if (response.data) {
-        updateAppointment(response.data._id, { status: 'completed' });
-        toast.success(response.message);
-      }
-    });
+    socketRef.current.on(
+      SOCKET_EVENTS.DECLINE_APPOINTMENT_REQUEST,
+      (payload: AppointmentEventPayload) =>
+        handleAppointmentUpdate(payload, toast.error)
+    );
+
+    socketRef.current.on(
+      SOCKET_EVENTS.COMPLETED_APPOINTMENT,
+      (payload: AppointmentEventPayload) =>
+        handleAppointmentUpdate(payload, toast.success)
+    );
 
     // Video call events
-    socketRef.current.on(SOCKET_EVENTS.VIDEO_CALL_REQUEST, (data: { from: User }) => {
+    socketRef.current.on(SOCKET_EVENTS.VIDEO_CALL_REQUEST, (_data: { from: User }) => {
       // Handle incoming call - will be handled by useRTC hook
     });
 
-    socketRef.current.on(SOCKET_EVENTS.VIDEO_CALL_RESPONSE, (data: { from: User; verdict?: string }) => {
+    socketRef.current.on(SOCKET_EVENTS.VIDEO_CALL_RESPONSE, (_data: { from: User; verdict?: string }) => {
       // Handle call response - will be handled by useRTC hook
     });
 
@@ -151,7 +164,7 @@ export function useSocket() {
       removeOnlineUser(data.userId);
     });
 
-  }, [accessToken, addMessage, addOnlineUser, removeOnlineUser, addAppointment, addAppointmentRequest, updateAppointment, removeAppointment, removeAppointmentRequest]);
+  }, [isAuthenticated, queryClient, addMessage, addOnlineUser, removeOnlineUser]);
 
   const disconnect = useCallback(() => {
     if (socketRef.current) {
@@ -161,7 +174,7 @@ export function useSocket() {
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated && accessToken) {
+    if (isAuthenticated) {
       connect();
     } else {
       disconnect();
@@ -170,7 +183,7 @@ export function useSocket() {
     return () => {
       disconnect();
     };
-  }, [isAuthenticated, accessToken, connect, disconnect]);
+  }, [isAuthenticated, connect, disconnect]);
 
   const emit = useCallback(<T = unknown>(event: string, data: T) => {
     if (socketRef.current) {
@@ -202,58 +215,10 @@ export function useSocket() {
 }
 
 export function useSocketEmitters() {
-  const { socket, emit } = useSocket();
+  const { emit } = useSocket();
 
   const sendMessage = useCallback((sender: string, receiver: string, message: string, messageId: string) => {
     emit(SOCKET_EVENTS.PRIVATE_MESSAGE, { sender, receiver, message, messageId });
-  }, [emit]);
-
-  const sendConnectionRequest = useCallback((from: Partial<User>, to: string) => {
-    emit(SOCKET_EVENTS.CONNECT_USER, { from, to });
-  }, [emit]);
-
-  const acceptConnection = useCallback((accepterId: string, requestId: string) => {
-    emit(SOCKET_EVENTS.ACCEPT_CONNECTION, { accepterId, requestId });
-  }, [emit]);
-
-  const rejectConnection = useCallback((rejecterId: string, requesterId: string) => {
-    emit(SOCKET_EVENTS.REJECT_CONNECTION, { rejecterId, requesterId });
-  }, [emit]);
-
-  const requestAppointment = useCallback((data: {
-    patientId: string;
-    doctorId: string;
-    date: string;
-    time: string;
-    status: string;
-    reason: string;
-  }) => {
-    emit(SOCKET_EVENTS.REQUEST_APPOINTMENT, data);
-  }, [emit]);
-
-  const acceptAppointment = useCallback((appointmentId: string) => {
-    emit(SOCKET_EVENTS.ACCEPT_APPOINTMENT, { appointmentId });
-  }, [emit]);
-
-  const rescheduleAppointment = useCallback((data: {
-    appointmentId: string;
-    date: string;
-    time: string;
-    reason: string;
-  }) => {
-    emit(SOCKET_EVENTS.RESCHEDULED_APPOINTMENT, data);
-  }, [emit]);
-
-  const cancelAppointment = useCallback((appointmentId: string) => {
-    emit(SOCKET_EVENTS.CANCELLED_APPOINTMENT, { appointmentId });
-  }, [emit]);
-
-  const declineAppointment = useCallback((appointmentId: string) => {
-    emit(SOCKET_EVENTS.DECLINE_APPOINTMENT_REQUEST, { appointmentId });
-  }, [emit]);
-
-  const completeAppointment = useCallback((appointmentId: string) => {
-    emit(SOCKET_EVENTS.COMPLETED_APPOINTMENT, { appointmentId });
   }, [emit]);
 
   const requestVideoCall = useCallback((to: string) => {
@@ -274,15 +239,6 @@ export function useSocketEmitters() {
 
   return {
     sendMessage,
-    sendConnectionRequest,
-    acceptConnection,
-    rejectConnection,
-    requestAppointment,
-    acceptAppointment,
-    rescheduleAppointment,
-    cancelAppointment,
-    declineAppointment,
-    completeAppointment,
     requestVideoCall,
     respondToVideoCall,
     joinRoom,

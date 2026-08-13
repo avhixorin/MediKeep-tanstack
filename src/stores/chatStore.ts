@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { ChatConversation, ChatMessage, User } from '@/types';
+import type { ChatConversation, ChatMessage } from '@/types';
 
 interface ChatState {
   conversations: ChatConversation[];
@@ -20,7 +20,7 @@ interface ChatState {
   markAsRead: (friendId: string) => void;
 }
 
-export const useChatStore = create<ChatState>((set, get) => ({
+export const useChatStore = create<ChatState>((set) => ({
   conversations: [],
   activeConversationId: null,
   onlineUsers: [],

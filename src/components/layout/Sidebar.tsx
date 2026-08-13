@@ -7,7 +7,6 @@ import {
   Users,
   Activity,
   Settings,
-  User,
   Menu,
   LogOut,
   Stethoscope,
@@ -38,7 +37,6 @@ const navItems: NavItem[] = [
   { label: 'Health Vitals', path: '/dashboard/vitals', icon: Activity, roles: [UserRole.PATIENT] },
   { label: 'Doctors', path: '/dashboard/doctors', icon: Stethoscope, roles: [UserRole.PATIENT] },
   { label: 'Patients', path: '/dashboard/patients', icon: Users, roles: [UserRole.DOCTOR] },
-  { label: 'Profile', path: '/dashboard/profile', icon: User, roles: [UserRole.PATIENT, UserRole.DOCTOR, UserRole.ADMIN] },
   { label: 'Settings', path: '/dashboard/settings', icon: Settings, roles: [UserRole.PATIENT, UserRole.DOCTOR, UserRole.ADMIN] },
 ];
 

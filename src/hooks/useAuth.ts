@@ -19,15 +19,8 @@ export function useAuth() {
     },
     onSuccess: (data) => {
       if (data.success && data.data) {
-        console.log("Data is", data)
         storeLogin(data.data);
         toast.success('Login successful');
-        console.log("Logged in user:", data.data);
-        console.log("Zustand user:", useAuthStore.getState().user);
-        console.log(
-          "Zustand authenticated:",
-          useAuthStore.getState().isAuthenticated
-        );
         queryClient.setQueryData(['user'], data.data);
       } else {
         toast.error(data.message || 'Login failed');
@@ -160,6 +153,56 @@ export function useAuth() {
     },
   });
 
+  const deleteAccountMutation = useMutation({
+    mutationFn: async (password: string) => {
+      const response = await apiClient.delete<ApiResponse>('/users/delete/user', {
+        data: { password },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        storeLogout();
+        queryClient.clear();
+        toast.success('Account deleted successfully');
+        navigate({ to: '/auth/login', replace: true });
+      } else {
+        toast.error(data.message);
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to delete account');
+    },
+  });
+
+  const uploadAvatarMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      const response = await apiClient.post<ApiResponse<string>>(
+        '/users/upload',
+        formData
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.success && data.data) {
+        useAuthStore.getState().updateUser({ profilePicture: data.data });
+        queryClient.setQueryData(['user'], (old: User | undefined) =>
+          old ? { ...old, profilePicture: data.data } : old
+        );
+        toast.success('Profile picture updated successfully');
+      } else {
+        toast.error(data.message);
+      }
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || 'Failed to update profile picture'
+      );
+    },
+  });
+
   return {
     user,
     isAuthenticated,
@@ -177,6 +220,10 @@ export function useAuth() {
     isUpdateProfilePending: updateProfileMutation.isPending,
     updatePassword: updatePasswordMutation.mutate,
     isUpdatePasswordPending: updatePasswordMutation.isPending,
+    deleteAccount: deleteAccountMutation.mutate,
+    isDeleteAccountPending: deleteAccountMutation.isPending,
+    uploadAvatar: uploadAvatarMutation.mutate,
+    isUploadAvatarPending: uploadAvatarMutation.isPending,
   };
 }
 

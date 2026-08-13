@@ -39,14 +39,62 @@ export interface User {
   gender?: 'male' | 'female' | 'other';
   profilePicture?: string;
   bio?: string;
+  about?: string;
+  settingPreferences?: UserSettingsPreferences;
   connections: string[];
   connectionRequests: string[];
   appointments: Appointment[];
+  appointmentRequests: Appointment[];
   notifications: Notification[];
   messages?: ChatMessage[];
   isVerified: boolean;
   createdAt: string;
   updatedAt: string;
+  // Populated on /users/verify: the clinically-connected patients (for a
+  // doctor) or doctors (for a patient), sourced from the User model's
+  // patients[]/doctors[] arrays.
+  patients?: User[];
+  doctors?: User[];
+}
+
+export interface UserSettingsPreferences {
+  general?: {
+    theme?: 'light' | 'dark';
+    language?: 'en' | 'hi';
+    accountPrivacy?: 'Public' | 'Private';
+  };
+  security?: {
+    twoFactorAuth?: boolean;
+    isAccountActive?: boolean;
+  };
+  billing?: {
+    plan?: 'Free' | 'Premium';
+    creditCard?: {
+      cardNumber?: string;
+      expiryDate?: string;
+      cvv?: string;
+    };
+    billingAddress?: {
+      address?: string;
+      city?: string;
+      state?: string;
+      zipCode?: string;
+    };
+    billingHistory?: Array<{
+      date: string;
+      amount: number;
+      status: string;
+    }>;
+  };
+  notifications?: {
+    isEnabled?: boolean;
+    emailNotifications?: boolean;
+    pushNotifications?: boolean;
+    smsNotifications?: boolean;
+    promotionalEmails?: boolean;
+    notificationSound?: boolean;
+    weeklyDigest?: boolean;
+  };
 }
 
 export interface Doctor extends User {
@@ -54,7 +102,6 @@ export interface Doctor extends User {
   licenseNumber?: string;
   yearsOfExperience?: number;
   hospital?: string;
-  appointmentRequests: string[];
 }
 
 export interface Notification {
@@ -88,25 +135,40 @@ export interface FileAttachment {
   url: string;
 }
 
+export type ProcessingStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+
+export type DocumentType =
+  | 'PRESCRIPTION'
+  | 'BLOOD_REPORT'
+  | 'ECG_REPORT'
+  | 'XRAY_REPORT'
+  | 'OTHER';
+
 export interface MedicalRecord {
   _id: string;
-  userId: string;
-  title: string;
-  description?: string;
-  files: MedicalFile[];
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface MedicalFile {
-  _id: string;
-  filename: string;
-  originalName: string;
-  mimeType: string;
-  size: number;
-  url: string;
+  title?: string;
+  notes?: string;
+  fileName: string;
+  fileType: string;
+  size?: number;
+  url?: string;
+  uploadedBy: User;
+  patient: User;
+  doctor: User;
+  uploadedByRole?: 'PATIENT' | 'DOCTOR';
+  connectionId: string;
   uploadedAt: string;
+  extractedText?: string;
+
+  processingStatus: ProcessingStatus;
+  documentType?: DocumentType;
+  documentDate?: string;
+  structuredData?: Record<string, unknown>;
+  chunkCount: number;
+  processingError?: string;
+  processingStartedAt?: string;
+  processingCompletedAt?: string;
+  retryCount: number;
 }
 
 export interface Appointment {
@@ -117,9 +179,27 @@ export interface Appointment {
   time: string;
   status: AppointmentStatus;
   reason: string;
-  notes?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AppointmentRequestData {
+  doctorId: string;
+  date: string;
+  time: string;
+  reason: string;
+  status?: AppointmentStatus;
+}
+
+export interface AppointmentRescheduleData {
+  date?: string;
+  time?: string;
+  reason?: string;
+}
+
+export interface AppointmentsData {
+  appointments: Appointment[];
+  appointmentRequests: Appointment[];
 }
 
 export interface HealthVital {

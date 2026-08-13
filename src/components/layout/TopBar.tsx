@@ -58,7 +58,7 @@ export function TopBar() {
         <ThemeToggle />
         {/* User Menu */}
         <Link
-          to="/dashboard/profile"
+          to="/dashboard/settings"
           className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent"
         >
           <Avatar className="h-8 w-8">
