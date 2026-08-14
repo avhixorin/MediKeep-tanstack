@@ -18,6 +18,7 @@ import { DashboardShell } from '@/components/layout/DashboardShell';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useMedicalRecords } from '@/hooks/useMedicalRecords';
 import { useAuthStore } from '@/stores';
 import { cn } from '@/lib/utils';
@@ -55,16 +56,18 @@ function RecordDetailsPage() {
 
   const entity = (isDoctor ? user?.patients : user?.doctors)?.find((e) => e._id === entityId);
 
-  const { records, uploadFiles, isUploading, deleteFile, retryProcessing } = useMedicalRecords({
+  const { records, uploadFiles, isUploading, deleteFile, isDeleting, retryProcessing } = useMedicalRecords({
     doctorId,
     patientId,
   });
 
   const [isDragging, setIsDragging] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState<MedicalRecord | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = (files: File[]) => {
-    if (files.length === 0) return;
+    if (files.length === 0 || isUploading) return;
     uploadFiles({ files, target: entityId });
   };
 
@@ -72,6 +75,13 @@ function RecordDetailsPage() {
     e.preventDefault();
     setIsDragging(false);
     handleFiles(Array.from(e.dataTransfer.files));
+  };
+
+  const handleConfirmDelete = () => {
+    if (!recordToDelete) return;
+    setDeletingId(recordToDelete._id);
+    deleteFile(recordToDelete._id);
+    setRecordToDelete(null);
   };
 
   return (
@@ -111,31 +121,45 @@ function RecordDetailsPage() {
         <div
           onDragOver={(e) => {
             e.preventDefault();
-            setIsDragging(true);
+            if (!isUploading) setIsDragging(true);
           }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
           className={cn(
             'border-2 border-dashed rounded-xl p-8 text-center transition-colors',
-            isDragging
-              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-              : 'border-slate-300 dark:border-slate-700 hover:border-slate-400'
+            isUploading
+              ? 'border-primary-300 bg-primary-50/60 dark:border-primary-800 dark:bg-primary-900/10 cursor-not-allowed'
+              : isDragging
+                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                : 'border-slate-300 dark:border-slate-700 hover:border-slate-400'
           )}
         >
           <div className="flex flex-col items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-              <FilePlus className="h-6 w-6 text-slate-500" />
+            <div
+              className={cn(
+                'w-12 h-12 rounded-full flex items-center justify-center',
+                isUploading ? 'bg-primary-100 dark:bg-primary-900/30' : 'bg-slate-100 dark:bg-slate-800'
+              )}
+            >
+              {isUploading ? (
+                <Loader2 className="h-6 w-6 text-primary-600 animate-spin" />
+              ) : (
+                <FilePlus className="h-6 w-6 text-slate-500" />
+              )}
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="font-medium text-primary-600"
-                disabled={isUploading}
-              >
-                Click to upload
-              </button>{' '}
-              or drag and drop
-            </p>
+            {isUploading ? (
+              <p className="text-sm font-medium text-primary-600">Uploading and processing...</p>
+            ) : (
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="font-medium text-primary-600"
+                >
+                  Click to upload
+                </button>{' '}
+                or drag and drop
+              </p>
+            )}
             <p className="text-xs text-slate-500">PDF, JPG, PNG up to 50MB each</p>
             <input
               ref={fileInputRef}
@@ -143,6 +167,7 @@ function RecordDetailsPage() {
               multiple
               accept="application/pdf,image/png,image/jpeg"
               className="hidden"
+              disabled={isUploading}
               onChange={(e) => e.target.files && handleFiles(Array.from(e.target.files))}
             />
           </div>
@@ -163,13 +188,24 @@ function RecordDetailsPage() {
                 key={record._id}
                 record={record}
                 index={index}
-                onDelete={() => deleteFile(record._id)}
+                isDeleting={isDeleting && deletingId === record._id}
+                onDelete={() => setRecordToDelete(record)}
                 onRetry={() => retryProcessing(record._id)}
               />
             ))}
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={!!recordToDelete}
+        title="Delete this record?"
+        description={`"${recordToDelete?.title || recordToDelete?.fileName}" will be permanently removed, including any AI-extracted data. This can't be undone.`}
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setRecordToDelete(null)}
+      />
     </DashboardShell>
   );
 }
@@ -177,11 +213,13 @@ function RecordDetailsPage() {
 function RecordCard({
   record,
   index,
+  isDeleting,
   onDelete,
   onRetry,
 }: {
   record: MedicalRecord;
   index: number;
+  isDeleting: boolean;
   onDelete: () => void;
   onRetry: () => void;
 }) {
@@ -191,9 +229,9 @@ function RecordCard({
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
-      <Card className="group hover:shadow-md transition-shadow">
+      <Card className={cn('group hover:shadow-md transition-shadow', isDeleting && 'opacity-60')}>
         <CardContent className="p-4">
-          <div className="flex items-start gap-4">
+          <div className={cn('flex items-start gap-4', isDeleting && 'pointer-events-none')}>
             <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center shrink-0">
               {isImage ? (
                 <FileImage className="h-8 w-8 text-purple-500" />
@@ -228,14 +266,28 @@ function RecordCard({
                 <p className="text-xs text-red-500 mt-2">{record.processingError}</p>
               )}
             </div>
-            <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              {record.processingStatus === 'FAILED' && (
+            <div
+              className={cn(
+                'flex flex-col gap-2 transition-opacity',
+                isDeleting ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              )}
+            >
+              {record.processingStatus === 'FAILED' && !isDeleting && (
                 <button onClick={onRetry} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Retry processing">
                   <RefreshCw className="h-4 w-4 text-slate-500" />
                 </button>
               )}
-              <button onClick={onDelete} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Delete record">
-                <Trash2 className="h-4 w-4 text-red-500" />
+              <button
+                onClick={onDelete}
+                disabled={isDeleting}
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 disabled:cursor-not-allowed"
+                title={isDeleting ? 'Deleting...' : 'Delete record'}
+              >
+                {isDeleting ? (
+                  <Loader2 className="h-4 w-4 text-red-500 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                )}
               </button>
             </div>
           </div>

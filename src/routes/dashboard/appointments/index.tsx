@@ -5,6 +5,7 @@ import { RescheduleModal } from '#/components/appointment/reschedule-modal';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
 import { Card, CardContent } from '#/components/ui/card';
+import { ConfirmDialog } from '#/components/ui/confirm-dialog';
 import {
   Tabs,
   TabsContent,
@@ -41,11 +42,14 @@ function AppointmentsPage() {
     isLoading,
     updateAppointmentStatus,
     cancelAppointment,
+    isCancelling,
   } = useAppointments();
 
   const [activeTab, setActiveTab] = useState('upcoming');
   const [isBooking, setIsBooking] = useState(false);
   const [reschedulingAppointment, setReschedulingAppointment] =
+    useState<Appointment | null>(null);
+  const [cancellingAppointment, setCancellingAppointment] =
     useState<Appointment | null>(null);
   const [actionId, setActionId] = useState<string | null>(null);
 
@@ -193,10 +197,12 @@ function AppointmentsPage() {
     }
   };
 
-  const handleCancel = async (appointment: Appointment) => {
-    setActionId(appointment._id);
+  const handleConfirmCancel = async () => {
+    if (!cancellingAppointment) return;
+    setActionId(cancellingAppointment._id);
     try {
-      await cancelAppointment(appointment._id);
+      await cancelAppointment(cancellingAppointment._id);
+      setCancellingAppointment(null);
     } finally {
       setActionId(null);
     }
@@ -296,7 +302,7 @@ function AppointmentsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleCancel(appointment)}
+                        onClick={() => setCancellingAppointment(appointment)}
                         disabled={actionId === appointment._id}
                       >
                         <XCircle className="h-4 w-4 text-danger-500" />
@@ -322,7 +328,7 @@ function AppointmentsPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleCancel(appointment)}
+                          onClick={() => setCancellingAppointment(appointment)}
                           disabled={actionId === appointment._id}
                         >
                           <XCircle className="h-4 w-4 text-danger-500" />
@@ -500,6 +506,28 @@ function AppointmentsPage() {
           onClose={() => setReschedulingAppointment(null)}
         />
       )}
+
+      <ConfirmDialog
+        open={!!cancellingAppointment}
+        title="Cancel this appointment?"
+        description={
+          cancellingAppointment
+            ? `Your appointment with ${
+                isDoctor
+                  ? `${cancellingAppointment.patient.firstName} ${cancellingAppointment.patient.lastName}`
+                  : `Dr. ${cancellingAppointment.doctor.firstName} ${cancellingAppointment.doctor.lastName}`
+              } on ${formatDate(cancellingAppointment.date)} at ${formatTime(
+                cancellingAppointment.time
+              )} will be cancelled. This can't be undone.`
+            : ''
+        }
+        confirmLabel="Cancel Appointment"
+        cancelLabel="Keep Appointment"
+        variant="destructive"
+        isLoading={isCancelling}
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setCancellingAppointment(null)}
+      />
     </DashboardShell>
   );
 }

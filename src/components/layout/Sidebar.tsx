@@ -18,6 +18,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useAuthStore, useUIStore } from '@/stores';
 import { useAuth } from '@/hooks';
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { cn } from '@/lib/utils';
 import { UserRole } from '@/types';
 import { useState } from 'react';
@@ -51,9 +52,10 @@ const adminNavItems: NavItem[] = [
 export function Sidebar() {
   const { isSidebarCollapsed } = useUIStore();
   const { user } = useAuthStore();
-  const { logout } = useAuth();
+  const { logout, isLogoutPending } = useAuth();
   const location = useLocation();
   const role = user?.role || UserRole.PATIENT;
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   const filteredNavItems = navItems.filter((item) => item.roles.includes(role));
   const filteredAdminItems = adminNavItems.filter((item) => item.roles.includes(role));
@@ -177,9 +179,9 @@ export function Sidebar() {
       {/* Bottom Actions */}
       <div className="border-t p-4">
         <button
-          onClick={() => logout()}
+          onClick={() => setIsLogoutConfirmOpen(true)}
           className={cn(
-            'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors',
+            'flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground',
             isSidebarCollapsed && 'justify-center px-2'
           )}
         >
@@ -187,16 +189,28 @@ export function Sidebar() {
           {!isSidebarCollapsed && <span>Logout</span>}
         </button>
       </div>
+
+      <ConfirmDialog
+        open={isLogoutConfirmOpen}
+        title="Log out?"
+        description="You'll need to sign in again to access your dashboard."
+        confirmLabel="Log out"
+        variant="destructive"
+        isLoading={isLogoutPending}
+        onConfirm={() => logout()}
+        onCancel={() => setIsLogoutConfirmOpen(false)}
+      />
     </aside>
   );
 }
 
 export function MobileSidebar() {
   const { user } = useAuthStore();
-  const { logout } = useAuth();
+  const { logout, isLogoutPending } = useAuth();
   const location = useLocation();
   const role = user?.role || UserRole.PATIENT;
   const [open, setOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   const filteredNavItems = navItems.filter((item) => item.roles.includes(role));
 
@@ -261,10 +275,7 @@ export function MobileSidebar() {
 
         <div className="border-t p-4">
           <button
-            onClick={() => {
-              logout();
-              setOpen(false);
-            }}
+            onClick={() => setIsLogoutConfirmOpen(true)}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
           >
             <LogOut className="h-5 w-5" />
@@ -272,6 +283,21 @@ export function MobileSidebar() {
           </button>
         </div>
       </SheetContent>
+
+      <ConfirmDialog
+        open={isLogoutConfirmOpen}
+        title="Log out?"
+        description="You'll need to sign in again to access your dashboard."
+        confirmLabel="Log out"
+        variant="destructive"
+        isLoading={isLogoutPending}
+        onConfirm={() => {
+          logout();
+          setIsLogoutConfirmOpen(false);
+          setOpen(false);
+        }}
+        onCancel={() => setIsLogoutConfirmOpen(false)}
+      />
     </Sheet>
   );
 }

@@ -181,7 +181,8 @@ export function useAuth() {
       formData.append('avatar', file);
       const response = await apiClient.post<ApiResponse<string>>(
         '/users/upload',
-        formData
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
       return response.data;
     },
