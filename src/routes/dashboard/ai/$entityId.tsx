@@ -33,7 +33,7 @@ function AskAiPage() {
   const { entityId } = Route.useParams();
   const { user } = useAuthStore();
   const isDoctor = user?.role === UserRole.DOCTOR;
-  const entity = (isDoctor ? user?.patients : user?.doctors)?.find((e) => e._id === entityId);
+  const entity = (isDoctor ? user.patients : user?.doctors)?.find((e) => e._id === entityId);
 
   const { messages, isLoadingHistory, send, isStreaming, progressLabel, error } = useAiChat({ target: entityId });
   const [input, setInput] = useState('');
@@ -73,11 +73,11 @@ function AskAiPage() {
             <Avatar className="size-9">
               <AvatarImage src={entity?.profilePicture} alt={entity?.firstName} />
               <AvatarFallback className="bg-primary-100 text-primary-600">
-                {entity?.firstName?.[0]}
-                {entity?.lastName?.[0]}
+                {entity?.firstName[0]}
+                {entity?.lastName[0]}
               </AvatarFallback>
             </Avatar>
-            <div className="absolute -bottom-1 -right-1 h-[18px] w-[18px] rounded-full bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center ring-2 ring-white dark:ring-slate-900">
+            <div className="absolute -bottom-1 -right-1 h-4.5 w-4.5 rounded-full bg-linear-to-br from-primary-500 to-purple-500 flex items-center justify-center ring-2 ring-white dark:ring-slate-900">
               <Sparkles className="h-2.5 w-2.5 text-white" />
             </div>
           </div>
@@ -110,7 +110,7 @@ function AskAiPage() {
             </div>
           ) : messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center shadow-lg shadow-primary-500/20">
+              <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-primary-500 to-purple-500 flex items-center justify-center shadow-lg shadow-primary-500/20">
                 <Sparkles className="h-7 w-7 text-white" />
               </div>
               <div>
@@ -145,7 +145,7 @@ function AskAiPage() {
                   >
                     <div className={cn('flex items-end gap-2 max-w-[75%]', isMe && 'flex-row-reverse')}>
                       {!isMe && (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-primary-500 to-purple-500 flex items-center justify-center shrink-0">
                           <Sparkles className="h-4 w-4 text-white" />
                         </div>
                       )}
@@ -158,7 +158,7 @@ function AskAiPage() {
                               : 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-bl-none shadow-sm border border-slate-100 dark:border-slate-800'
                           )}
                         >
-                          <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">
+                          <p className="text-sm whitespace-pre-wrap wrap-break-word leading-relaxed">
                             {message.content}
                           </p>
                         </div>
@@ -192,7 +192,7 @@ function AskAiPage() {
           {isStreaming && (
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
               <div className="flex items-center gap-2.5 rounded-2xl rounded-bl-none bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800 pl-1.5 pr-4 py-1.5">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-full bg-linear-to-br from-primary-500 to-purple-500 flex items-center justify-center shrink-0">
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
                 <span className="flex gap-1">
@@ -229,7 +229,7 @@ function AskAiPage() {
               }}
               placeholder="Ask about these records..."
               disabled={isStreaming}
-              className="flex-1 max-h-[120px] resize-none py-2.5 px-4 rounded-2xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60 text-sm leading-relaxed"
+              className="flex-1 max-h-30 resize-none py-2.5 px-4 rounded-2xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-60 text-sm leading-relaxed"
             />
             <button
               onClick={() => handleSend()}

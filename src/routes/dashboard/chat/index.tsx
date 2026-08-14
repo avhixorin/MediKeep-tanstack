@@ -1,5 +1,6 @@
 import { DashboardShell } from '#/components/layout';
 import { ConnectionsModal } from '#/components/chat/connections-modal';
+import { useVideoCall } from '#/components/video-call/video-call-context';
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
@@ -21,6 +22,7 @@ function ChatPage() {
   const { conversations: storeConversations, activeConversationId, setActiveConversation, markAsRead, onlineUsers } = useChatStore();
   const { sendMessage } = useSocketEmitters();
   const { conversations, connectionRequests, isLoading } = useConnections();
+  const { startCall } = useVideoCall();
 
   const [isConnectionsOpen, setIsConnectionsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -217,10 +219,29 @@ function ChatPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (activeConversation.friend) {
+                      startCall(activeConversation.friendId, activeConversation.friend, true);
+                    }
+                  }}
+                  aria-label="Start audio call"
+                >
                   <Phone className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="text-primary">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-primary"
+                  onClick={() => {
+                    if (activeConversation.friend) {
+                      startCall(activeConversation.friendId, activeConversation.friend, false);
+                    }
+                  }}
+                  aria-label="Start video call"
+                >
                   <Video className="h-5 w-5" />
                 </Button>
                 <Button variant="ghost" size="icon">

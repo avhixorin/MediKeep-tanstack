@@ -146,15 +146,6 @@ export function useSocket() {
         handleAppointmentUpdate(payload, toast.success)
     );
 
-    // Video call events
-    socketRef.current.on(SOCKET_EVENTS.VIDEO_CALL_REQUEST, (_data: { from: User }) => {
-      // Handle incoming call - will be handled by useRTC hook
-    });
-
-    socketRef.current.on(SOCKET_EVENTS.VIDEO_CALL_RESPONSE, (_data: { from: User; verdict?: string }) => {
-      // Handle call response - will be handled by useRTC hook
-    });
-
     // Online status events
     socketRef.current.on(SOCKET_EVENTS.USER_CONNECTED, (data: { userId: string }) => {
       addOnlineUser(data.userId);
@@ -221,14 +212,6 @@ export function useSocketEmitters() {
     emit(SOCKET_EVENTS.PRIVATE_MESSAGE, { sender, receiver, message, messageId });
   }, [emit]);
 
-  const requestVideoCall = useCallback((to: string) => {
-    emit(SOCKET_EVENTS.VIDEO_CALL_REQUEST, { to });
-  }, [emit]);
-
-  const respondToVideoCall = useCallback((to: string, verdict: 'accepted' | 'rejected') => {
-    emit(SOCKET_EVENTS.VIDEO_CALL_RESPONSE, { to, verdict });
-  }, [emit]);
-
   const joinRoom = useCallback((roomId: string, username: string) => {
     emit(SOCKET_EVENTS.JOIN_ROOM, { roomId, username });
   }, [emit]);
@@ -239,8 +222,6 @@ export function useSocketEmitters() {
 
   return {
     sendMessage,
-    requestVideoCall,
-    respondToVideoCall,
     joinRoom,
     getOnlineFriends,
   };
